@@ -19,8 +19,8 @@ archivo1 = st.file_uploader("Sube el archivo de Excel con los datos del proveedo
 if archivo1 is not None:
     if 'archivo_subido' not in st.session_state or st.session_state['archivo_subido'] != archivo1.name:
         try:
-            # Leer el archivo de Excel
-            df1 = pd.read_excel(archivo1)
+            # Leer el archivo de Excel y forzar todas las columnas como texto
+            df1 = pd.read_excel(archivo1, dtype=str)
 
             # Mostrar los primeros 5 registros del archivo
             st.subheader("Contenido del archivo con los datos 📂")
