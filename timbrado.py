@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
+from datetime import datetime, timedelta
 
 # Título de la app
 st.title('Hacer archivo de Excel 📊')
@@ -26,15 +27,29 @@ if archivo1 is not None:
             st.subheader("Contenido del archivo con los datos 📂")
             st.write(df1)
 
-            # Paso 1: Transformar las columnas que contienen "fecha" en su nombre
-            fecha_columnas = [col for col in df1.columns if 'fecha' in col.lower()]
-            if fecha_columnas:
-                for col in fecha_columnas:
-                    try:
-                        # Convertir la columna al formato deseado
-                        df1[col] = pd.to_datetime(df1[col], errors='coerce').dt.strftime('%Y-%m-%dT12:00:00')
-                    except Exception as e:
-                        st.error(f"No se pudo convertir la columna {col} a formato de fecha: {e}")
+            # Paso 1: Transformar las columnas de fecha con las siguientes reglas
+            fecha_de_ayer = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%dT12:00:00')
+
+            # Reglas para la columna FECHA (poner la fecha de ayer con formato YYYY-MM-DDT12:00:00)
+            if 'FECHA' in df1.columns:
+                try:
+                    df1['FECHA'] = fecha_de_ayer
+                except Exception as e:
+                    st.error(f"No se pudo actualizar la columna FECHA: {e}")
+
+            # Reglas para la columna FECHAHORASALIDALLEGADA_OR (mantener la fecha actual, cambiar formato)
+            if 'FECHAHORASALIDALLEGADA_OR' in df1.columns:
+                try:
+                    df1['FECHAHORASALIDALLEGADA_OR'] = pd.to_datetime(df1['FECHAHORASALIDALLEGADA_OR'], errors='coerce').dt.strftime('%Y-%m-%dT12:00:00')
+                except Exception as e:
+                    st.error(f"No se pudo actualizar la columna FECHAHORASALIDALLEGADA_OR: {e}")
+
+            # Reglas para la columna FECHAHORASALIDALLEGADA_DES (mantener la fecha actual, cambiar formato)
+            if 'FECHAHORASALIDALLEGADA_DES' in df1.columns:
+                try:
+                    df1['FECHAHORASALIDALLEGADA_DES'] = pd.to_datetime(df1['FECHAHORASALIDALLEGADA_DES'], errors='coerce').dt.strftime('%Y-%m-%dT12:00:00')
+                except Exception as e:
+                    st.error(f"No se pudo actualizar la columna FECHAHORASALIDALLEGADA_DES: {e}")
 
             st.subheader("Contenido del archivo con las fechas transformadas 📅")
             st.write(df1)
